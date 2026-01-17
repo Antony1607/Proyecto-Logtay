@@ -1,87 +1,97 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import Link from 'next/link'
 
 export default function CrearCampana() {
   const [nombre, setNombre] = useState('')
   const [companyId, setCompanyId] = useState<string | null>(null)
-  const [mensaje, setMensaje] = useState({ tipo: '', texto: '' })
+  const [campanas, setCampanas] = useState<any[]>([])
+  const [editandoId, setEditandoId] = useState<string | null>(null)
+  const [nuevoNombre, setNuevoNombre] = useState('')
 
-  useEffect(() => {
-    const getUserCompany = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+  const cargarDatos = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
 
-      const { data } = await supabase
-        .from('users')
-        .select('company_id')
-        .eq('id', user.id)
-        .single()
-
-      setCompanyId(data?.company_id || null)
-    }
-
-    getUserCompany()
-  }, [])
-
-  const handleCrear = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!companyId) {
-      setMensaje({ tipo: 'error', texto: 'No se encontró la empresa del usuario' })
-      return
-    }
-
-    const { error } = await supabase
-      .from('campaigns')
-      .insert([{
-        name: nombre,
-        status: 'active',
-        company_id: companyId
-      }])
-
-    if (error) {
-      setMensaje({ tipo: 'error', texto: error.message })
-    } else {
-      setMensaje({ tipo: 'success', texto: '✅ Campaña creada correctamente' })
-      setNombre('')
+    const { data: userData } = await supabase.from('users').select('company_id').eq('id', user.id).single()
+    if (userData?.company_id) {
+      setCompanyId(userData.company_id)
+      const { data } = await supabase.from('campaigns').select('*').eq('company_id', userData.company_id).order('created_at', { ascending: false })
+      setCampanas(data || [])
     }
   }
 
-  return (
-    <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 w-full max-w-md mx-auto">
-      {/* Título con color gris muy oscuro casi negro */}
-      <h2 className="text-2xl font-bold mb-6 text-slate-800">Nueva Campaña</h2>
-      
-      <form onSubmit={handleCrear} className="space-y-4">
-        <div>
-          {/* Etiqueta opcional para mayor claridad */}
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Nombre del Proyecto
-          </label>
-          <input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            // text-slate-900 asegura que lo que escribas sea negro/gris oscuro
-            className="w-full border border-slate-300 p-3 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-            placeholder="Ej: Inventario General 2024"
-            required
-          />
-        </div>
-        
-        <button className="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700 active:scale-95 transition-all shadow-md shadow-blue-100">
-          Crear Campaña
-        </button>
-      </form>
+  useEffect(() => { cargarDatos() }, [])
 
-      {mensaje.texto && (
-        <p className={`mt-4 text-center font-bold ${
-          mensaje.tipo === 'error' ? 'text-red-600' : 'text-emerald-600'
-        }`}>
-          {mensaje.texto}
-        </p>
-      )}
+  const handleCrear = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!companyId) return
+    const { error } = await supabase.from('campaigns').insert([{ name: nombre, status: 'active', company_id: companyId }])
+    if (!error) { setNombre(''); cargarDatos(); }
+  }
+
+  const handleEliminar = async (id: string) => {
+    if (confirm('¿Eliminar campaña? Esto afectará los conteos móviles.')) {
+      await supabase.from('campaigns').delete().eq('id', id)
+      cargarDatos()
+    }
+  }
+
+  const handleGuardarEdicion = async (id: string) => {
+    await supabase.from('campaigns').update({ name: nuevoNombre }).eq('id', id)
+    setEditandoId(null)
+    cargarDatos()
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Formulario Crear */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
+        <h2 className="text-lg font-bold text-slate-800 mb-4">Nueva Campaña</h2>
+        <form onSubmit={handleCrear} className="space-y-4">
+          <input 
+            type="text" value={nombre} onChange={(e) => setNombre(e.target.value)}
+            className="w-full border p-3 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+            placeholder="Nombre (ej. Inventario 2025)" required 
+          />
+          <button className="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all">Crear para Móvil</button>
+        </form>
+      </div>
+
+      {/* Lista para Seguimiento */}
+      <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 border-b text-slate-500 uppercase text-[10px] font-bold">
+            <tr>
+              <th className="px-6 py-4">Campaña</th>
+              <th className="px-6 py-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 text-slate-700">
+            {campanas.map((camp) => (
+              <tr key={camp.id} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-4 font-medium">
+                  {editandoId === camp.id ? (
+                    <input className="border p-1 rounded w-full text-slate-900" value={nuevoNombre} onChange={(e) => setNuevoNombre(e.target.value)} autoFocus />
+                  ) : camp.name}
+                </td>
+                <td className="px-6 py-4 text-right flex justify-end gap-3 font-bold text-[11px]">
+                  {editandoId === camp.id ? (
+                    <button onClick={() => handleGuardarEdicion(camp.id)} className="text-green-600">GUARDAR</button>
+                  ) : (
+                    <>
+                      <Link href={`/conteos?id=${camp.id}`} className="text-blue-600">REPORTES</Link>
+                      <button onClick={() => { setEditandoId(camp.id); setNuevoNombre(camp.name); }} className="text-amber-500">EDITAR</button>
+                      <button onClick={() => handleEliminar(camp.id)} className="text-red-500">BORRAR</button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
