@@ -1,35 +1,34 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '../lib/supabase' 
 import { useRouter } from 'next/navigation'
-import Navbar from '../components/Navbar' // Lo crearemos ahora
-import CrearCampana from '../components/CrearCampaña' // Moveremos el código aquí
+import Navbar from '../components/Navbar' 
+import CrearCampana from '../components/CrearCampana' 
 
 export default function Home() {
-  const [session, setSession] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    // 1. Revisar si el usuario está logueado
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push('/login') // Si no hay sesión, al Login
+        router.push('/login') 
       } else {
-        setSession(session)
+        setLoading(false)
       }
-      setLoading(false)
     })
   }, [router])
 
-  if (loading) return <div className="flex h-screen items-center justify-center">Cargando Logtay...</div>
+  if (loading) return <div className="flex h-screen items-center justify-center text-slate-900 font-bold">Cargando Logtay...</div>
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar /> 
-      <div className="p-8">
-        <CrearCampana />
-      </div>
-    </main>
+      <main className="flex-grow flex items-center justify-center p-8">
+        <div className="w-full max-w-4xl">
+          <CrearCampana />
+        </div>
+      </main>
+    </div>
   )
 }

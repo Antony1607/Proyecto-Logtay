@@ -25,7 +25,7 @@ export default function Login() {
       setMessage({ type: 'error', text: 'Credenciales incorrectas.' })
       setLoading(false)
     } else {
-      router.push('/')
+      window.location.href = '/'
     }
   }
 
