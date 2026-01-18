@@ -55,7 +55,7 @@ export default function CrearCampana() {
             className="w-full border p-3 rounded-xl text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="Nombre (ej. Inventario 2025)" required 
           />
-          <button className="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all">Crear para Móvil</button>
+          <button className="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition-all">Crear Campaña</button>
         </form>
       </div>
 
@@ -81,7 +81,7 @@ export default function CrearCampana() {
                     <button onClick={() => handleGuardarEdicion(camp.id)} className="text-green-600">GUARDAR</button>
                   ) : (
                     <>
-                      <Link href={`/conteos?id=${camp.id}`} className="text-blue-600">REPORTES</Link>
+                      <Link href={`/conteos?id=${camp.id}`} className="text-blue-600">CONTEOS</Link>
                       <button onClick={() => { setEditandoId(camp.id); setNuevoNombre(camp.name); }} className="text-amber-500">EDITAR</button>
                       <button onClick={() => handleEliminar(camp.id)} className="text-red-500">BORRAR</button>
                     </>
