@@ -23,7 +23,12 @@ export default function UbicacionesPage() {
   }, [])
 
   const cargarUbicaciones = async (cId: string) => {
-    const { data } = await supabase.from('locations').select('*').eq('company_id', cId).order('location_code', { ascending: true })
+    // Ordenamos por código para que la tabla sea fácil de leer
+    const { data } = await supabase
+      .from('locations')
+      .select('*')
+      .eq('company_id', cId)
+      .order('location_code', { ascending: true })
     setUbicaciones(data || [])
   }
 
@@ -36,17 +41,32 @@ export default function UbicacionesPage() {
       header: true,
       skipEmptyLines: true,
       complete: async (results) => {
+        // --- 1. LÓGICA DE LIMPIEZA (BORRADO PREVIO) ---
+        // Borramos solo las ubicaciones que pertenecen a tu empresa antes de subir las nuevas
+        const { error: deleteError } = await supabase
+          .from('locations')
+          .delete()
+          .eq('company_id', companyId)
+
+        if (deleteError) {
+          alert("Error al limpiar ubicaciones anteriores: " + deleteError.message)
+          setLoading(false)
+          return
+        }
+
+        // --- 2. PROCESAMIENTO E INSERCIÓN ---
         const nuevasUbicaciones = results.data.map((row: any) => ({
           location_code: row.codigo || row.code,
           description: row.descripcion || row.nombre,
           company_id: companyId
         }))
 
-        const { error } = await supabase.from('locations').insert(nuevasUbicaciones)
+        const { error: insertError } = await supabase.from('locations').insert(nuevasUbicaciones)
         
-        if (error) alert("Error: " + error.message)
-        else {
-          alert(`✅ Se cargaron ${nuevasUbicaciones.length} ubicaciones.`)
+        if (insertError) {
+          alert("Error al insertar nuevas ubicaciones: " + insertError.message)
+        } else {
+          alert(`✅ ¡Éxito! Se actualizaron ${nuevasUbicaciones.length} ubicaciones.`)
           cargarUbicaciones(companyId)
         }
         setLoading(false)
@@ -64,8 +84,8 @@ export default function UbicacionesPage() {
             <p className="text-slate-500">Define los puntos de control para el equipo móvil.</p>
           </div>
           <label className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold cursor-pointer hover:bg-slate-800 transition-all shadow-xl">
-            {loading ? 'Subiendo...' : '＋ CARGAR CSV'}
-            <input type="file" accept=".csv" className="hidden" onChange={handleFileUpload} />
+            {loading ? 'Subiendo y actualizando...' : '＋ ACTUALIZAR CSV'}
+            <input type="file" accept=".csv" className="hidden" onChange={handleFileUpload} disabled={loading} />
           </label>
         </header>
 
@@ -79,15 +99,15 @@ export default function UbicacionesPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {ubicaciones.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-50">
+                <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                   <td className="p-5 font-mono text-blue-600 font-bold">{u.location_code}</td>
                   <td className="p-5 font-medium text-slate-700">{u.description}</td>
                 </tr>
               ))}
-              {ubicaciones.length === 0 && (
+              {ubicaciones.length === 0 && !loading && (
                 <tr>
                   <td colSpan={2} className="p-20 text-center text-slate-400 italic">
-                    Sin ubicaciones. Sube un CSV con: <span className="font-mono font-bold">codigo, descripcion</span>
+                    Sin ubicaciones cargadas actualmente.
                   </td>
                 </tr>
               )}
