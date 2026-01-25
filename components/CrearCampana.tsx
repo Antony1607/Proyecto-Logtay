@@ -46,7 +46,7 @@ export default function CrearCampana() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Formulario Crear */}
+
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
         <h2 className="text-lg font-bold text-slate-800 mb-4">Nueva Campaña</h2>
         <form onSubmit={handleCrear} className="space-y-4">
@@ -59,7 +59,6 @@ export default function CrearCampana() {
         </form>
       </div>
 
-      {/* Lista para Seguimiento */}
       <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 border-b text-slate-500 uppercase text-[10px] font-bold">
