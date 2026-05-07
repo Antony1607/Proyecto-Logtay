@@ -33,10 +33,10 @@ export default function Navbar() {
       .eq('id', user.id)
       .single()
 
-    if (usuario && usuario.companies) {
+    if (usuario && usuario.companies && usuario.companies.length > 0) {
 
-      setEmpresaNombre(usuario.companies.name)
-      setLogo(usuario.companies.logo_url)
+      setEmpresaNombre(usuario.companies[0].name)
+  setLogo(usuario.companies[0].logo_url)
 
       if (usuario.companies.logo_url) {
         localStorage.setItem('logtay_logo', usuario.companies.logo_url)
