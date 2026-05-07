@@ -35,16 +35,17 @@ export default function Navbar() {
 
     if (usuario && usuario.companies && usuario.companies.length > 0) {
 
-      setEmpresaNombre(usuario.companies[0].name)
+  setEmpresaNombre(usuario.companies[0].name)
   setLogo(usuario.companies[0].logo_url)
 
-      if (usuario.companies.logo_url) {
-        localStorage.setItem('logtay_logo', usuario.companies.logo_url)
-      }
-      if (usuario.companies.name) {
-        localStorage.setItem('logtay_name', usuario.companies.name)
-      }
-    }
+  if (usuario.companies[0].logo_url) {
+    localStorage.setItem('logtay_logo', usuario.companies[0].logo_url)
+  }
+
+  if (usuario.companies[0].name) {
+    localStorage.setItem('logtay_empresa', usuario.companies[0].name)
+  }
+}
     setLoading(false)
   }
 
