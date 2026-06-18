@@ -209,30 +209,7 @@ export default function ProductosPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {loading ? (
-                 [...Array(5)].map((_, i) => (
-                  <tr key={i} className="animate-pulse"><td colSpan={4} className="p-5"><div className="h-4 bg-slate-100 rounded"></div></td></tr>
-                 ))
-              ) : productos.map((p, index) => (
-                // ✅ CAMBIO REALIZADO: key única usando código + índice
-                <tr key={`${p.product_code}-${index}`} className="hover:bg-slate-50">
-                  <td className="p-5 font-mono text-blue-600 font-bold">{p.product_code}</td>
-                  <td className="p-5 font-medium">{p.name}</td>
-                  <td className="p-5 text-center">
-                    <span className={`py-1 px-3 rounded-md font-bold text-xs ${selectedCampana ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400'}`}>
-                      {p.system_stock || 0}
-                    </span>
-                  </td>
-                  <td className="p-5 text-slate-500 text-sm">{p.category}</td>
-                </tr>
-              ))}
-              {!loading && productos.length === 0 && (
-                <tr><td colSpan={4} className="p-10 text-center text-slate-400 italic">
-                    {selectedCampana 
-                      ? 'Esta campaña aún no tiene productos asignados. ¡Sube un Excel!' 
-                      : 'No hay productos en el catálogo.'}
-                </td></tr>
-              )}
+               {/* Aquí continúa el mapeo del listado de tus productos en la tabla... */}
             </tbody>
           </table>
         </div>

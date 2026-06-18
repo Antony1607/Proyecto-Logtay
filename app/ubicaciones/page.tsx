@@ -23,7 +23,6 @@ export default function UbicacionesPage() {
   }, [])
 
   const cargarUbicaciones = async (cId: string) => {
-    // Ordenamos por código para que la tabla sea fácil de leer
     const { data } = await supabase
       .from('locations')
       .select('*')
@@ -41,8 +40,6 @@ export default function UbicacionesPage() {
       header: true,
       skipEmptyLines: true,
       complete: async (results) => {
-        // --- 1. LÓGICA DE LIMPIEZA (BORRADO PREVIO) ---
-        // Borramos solo las ubicaciones que pertenecen a tu empresa antes de subir las nuevas
         const { error: deleteError } = await supabase
           .from('locations')
           .delete()
@@ -54,7 +51,6 @@ export default function UbicacionesPage() {
           return
         }
 
-        // --- 2. PROCESAMIENTO E INSERCIÓN ---
         const nuevasUbicaciones = results.data.map((row: any) => ({
           location_code: row.codigo || row.code,
           description: row.descripcion || row.nombre,

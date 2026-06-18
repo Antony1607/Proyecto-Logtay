@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Dirección exacta exigida por el laboratorio mapeada a tu servidor de producción
+Sitemap: https://onrender.com
