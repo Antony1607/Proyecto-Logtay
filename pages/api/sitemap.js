@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const BASE_URL = "https://onrender.com"; 
+const BASE_URL = "https://proyecto-logtay-2.onrender.com"; 
 
 export default async function handler(req, res) {
   try {
