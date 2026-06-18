@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx'
 
 export default function ReporteDiferencias() {
   const searchParams = useSearchParams()
-  const campaignId = searchParams.get('id')
+  const campaignId = searchParams?.get('id')
   const [datosReporte, setDatosReporte] = useState<any[]>([])
   const [nombreCampana, setNombreCampana] = useState('')
   const [loading, setLoading] = useState(true)
