@@ -1,6 +1,4 @@
-
 import { createClient } from '@supabase/supabase-js';
-
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -23,7 +21,6 @@ export default async function handler(req, res) {
       dynamicUrls = items.map(item => `/productos/${item.product_code}`);
     }
 
-    
     const allUrls = [...staticUrls, ...dynamicUrls];
 
     
@@ -42,7 +39,6 @@ export default async function handler(req, res) {
         .join("")}
     </urlset>`;
 
-   
     res.setHeader("Content-Type", "text/xml");
     res.write(sitemapXml);
     res.end();
