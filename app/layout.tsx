@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-
 export const metadata: Metadata = {
   title: "Control de Inventarios y Campañas Logísticas | Logtay",
   description: "Gestiona tus campañas de conteo de inventarios, reportes de diferencias y almacenes en tiempo real con la plataforma logística Logtay.",
@@ -10,6 +9,9 @@ export const metadata: Metadata = {
     title: "Control de Inventarios y Campañas Logísticas | Logtay",
     description: "Optimiza tus auditorías de stock y almacenes en tiempo real.",
     type: "website",
+  },
+  verification: {
+    google: "ai0ywvDpZ9qiehbUHByLV2ckTWpOcDytZfB1mkq7bfI",
   }
 };
 
